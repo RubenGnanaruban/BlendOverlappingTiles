@@ -45,8 +45,8 @@ int main()
     int imgheight, imgwidth, M, N;
     int N_x = 2;
     int N_y = 2;
-    int n_X_tiles = 10;// 19;// 15;// 10;
-    int n_Y_tiles = 26;// 21;// 15;// 16;
+    int n_X_tiles = 10;// 19;// 15;// 10; // Number of horizontal tiles
+    int n_Y_tiles = 26;// 21;// 15;// 16; // Number of vertical tiles
 
     //String dirname = "images_to_crop"; //".\\images_to_crop";
     //string dirname = "D:\\PaigeAI subtype 254\\FIBI Breast\\111\\Breast HVS-21-111 Serial H&E FIBI EDOF scan 1\\converted_olt";
@@ -91,8 +91,6 @@ int main()
       }
       ++i_y;
     }*/
-
-
 
 
     vector<vector<double>> kernal_mid(imgheight, vector<double>(imgwidth));
