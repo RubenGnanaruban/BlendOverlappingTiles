@@ -45,11 +45,9 @@ int main()
     int imgheight, imgwidth, M, N;
     int N_x = 2;
     int N_y = 2;
-    int n_X_tiles = 10;// 19;// 15;// 10; // Number of horizontal tiles
-    int n_Y_tiles = 26;// 21;// 15;// 16; // Number of vertical tiles
+    int n_X_tiles = 10; // Number of horizontal tiles
+    int n_Y_tiles = 26; // Number of vertical tiles
 
-    //String dirname = "images_to_crop"; //".\\images_to_crop";
-    //string dirname = "D:\\PaigeAI subtype 254\\FIBI Breast\\111\\Breast HVS-21-111 Serial H&E FIBI EDOF scan 1\\converted_olt";
     //string dirname = "D:\\PaigeAI subtype 254\\FIBI Breast\\Breast HVS-21-120 Serial H&E FIBI EDOF scan 1\\converted_olt";
     //string dirname = "D:\\PaigeAI subtype 254\\FIBI Breast\\Breast HVS-21-123 section 2 Serial H&E FIBI EDOF scan 1\\Breast HVS-21-123 section 2 Serial H&E FIBI EDOF scan 1\\converted_olt"; 
     string dirname = "C:\\Users\\Histo\\Documents\\ProstateTissue_for_CycleGAN\\Tanishq\\191";
@@ -151,29 +149,6 @@ int main()
                             value += (img_bottom.at<Vec3b>(row - M, col) * bottom_vs_right + img_right.at<Vec3b>(row, col - N) * (1 - bottom_vs_right)) * kernal_comp[row][col];
                         }
                     }
-                    
-
-                    /*
-                    if (row < col) {
-                        if (col + row < imgwidth) {
-                            // use top_tile
-                            value += img_top.at<Vec3b>(row + M, col) * kernal_comp[row][col];
-                        }
-                        else {
-                            // use right_tile
-                            value += img_right.at<Vec3b>(row, col - N) * kernal_comp[row][col];
-                        }
-                    }
-                    else {
-                        if (col + row < imgwidth) {
-                            // use left_tile
-                            value += img_left.at<Vec3b>(row, col + N) * kernal_comp[row][col];
-                        }
-                        else {
-                            // use bottom_tile
-                            value += img_bottom.at<Vec3b>(row - M, col) * kernal_comp[row][col];
-                        }
-                    }*/
 
                     img_mid.at<Vec3b>(row, col) = value;
                 }
@@ -542,69 +517,5 @@ int main()
     }
     imwrite(dir_blended_tiles + "\\" + getFileName(fn[i_mid_tile]) + ".jpg", img_mid);
 
-    /*
-    Vec3b value;
-    for (int row = 0; row < imgheight; row++) {
-        for (int col = 0; col < imgwidth; col++) {
-            //Vec3b as typename
-            value = img.at<Vec3b>(row, col);
-            value *= kernal_mid[row][col];
-            img.at<Vec3b>(row, col) = value;
-        }
-    }
-    imwrite(dir_blended_tiles + "\\" + "test1.jpg", img);
-
-    int i_y = 0, i_x;
-    Mat overlapping_tile;
-
-    //Case 1: vertically aligned with the original tiles, horizontally in between tiles
-    while (i_y < n_Y_tiles) {
-        i_x = 0;
-        while (i_x < n_X_tiles - 1) {
-            int i_first_image = n_X_tiles * i_y + i_x;
-            Mat img_l = imread(fn[i_first_image]);
-            Mat tile_l = img_l(Range(0, imgheight), Range(N - overlap_original_sides, imgwidth - overlap_original_sides));
-            Mat img_r = imread(fn[i_first_image + 1]);
-            Mat tile_r = img_r(Range(0, imgheight), Range(overlap_original_sides, N + overlap_original_sides));
-            cv::hconcat(tile_l, tile_r, overlapping_tile);
-            imwrite(dir_blended_tiles + "\\" + getFileName(fn[i_first_image]) + '_' + ".jpg", overlapping_tile);
-            ++i_x;
-        }
-        ++i_y;
-    }
-    //Case 2 and 3: vertically in between the original tiles
-    i_y = 0;
-    while (i_y < n_Y_tiles - 1) {
-        i_x = 0;
-        while (i_x < 2 * n_X_tiles - 1) {
-            if (i_x % 2) {//Case 3: vertically and horizontally in between tiles
-                int i_first_image = n_X_tiles * i_y + (i_x - 1) / 2;
-                Mat img_top_l = imread(fn[i_first_image]);
-                Mat tile_top_l = img_top_l(Range(M - overlap_original_top_bottom, imgheight - overlap_original_top_bottom), Range(N - overlap_original_sides, imgwidth - overlap_original_sides));
-                Mat img_b_l = imread(fn[i_first_image + n_X_tiles]);
-                Mat tile_b_l = img_b_l(Range(overlap_original_top_bottom, M + overlap_original_top_bottom), Range(N - overlap_original_sides, imgwidth - overlap_original_sides));
-                Mat ol_tile_l, ol_tile_r;
-                cv::vconcat(tile_top_l, tile_b_l, ol_tile_l);
-                Mat img_top_r = imread(fn[i_first_image + 1]);
-                Mat tile_top_r = img_top_r(Range(M - overlap_original_top_bottom, imgheight - overlap_original_top_bottom), Range(overlap_original_sides, N + overlap_original_sides));
-                Mat img_b_r = imread(fn[i_first_image + n_X_tiles + 1]);
-                Mat tile_b_r = img_b_r(Range(overlap_original_top_bottom, M + overlap_original_top_bottom), Range(overlap_original_sides, N + overlap_original_sides));
-                cv::vconcat(tile_top_r, tile_b_r, ol_tile_r);
-                cv::hconcat(ol_tile_l, ol_tile_r, overlapping_tile);
-                imwrite(dir_blended_tiles + "\\" + insert_FileName(fn[i_first_image]) + '_' + ".jpg", overlapping_tile);
-            }
-            else {//Case 2: vertically in between, horizontally aligned
-                int i_first_image = n_X_tiles * i_y + i_x / 2;
-                Mat img_top = imread(fn[i_first_image]);
-                Mat tile_top = img_top(Range(M - overlap_original_top_bottom, imgheight - overlap_original_top_bottom), Range(0, imgwidth));
-                Mat img_b = imread(fn[i_first_image + n_X_tiles]);
-                Mat tile_b = img_b(Range(overlap_original_top_bottom, M + overlap_original_top_bottom), Range(0, imgwidth));
-                cv::vconcat(tile_top, tile_b, overlapping_tile);
-                imwrite(dir_blended_tiles + "\\" + insert_FileName(fn[i_first_image]) + ".jpg", overlapping_tile);
-            }
-            ++i_x;
-        }
-        ++i_y;
-    }*/
 }
 
